@@ -35,247 +35,37 @@ Conversational IA, specialist on InfinitePay and Math.
 ### Prerequisites
 
 - Docker and Docker Compose
-- At least 4GB RAM available for containers
 - Ports 8080, 8000, 5432, 6379, 11434 available
 
 ### 1. Clone and Setup
 
 ```bash
-git clone <repository-url>
-cd chat-infinite
+git clone https://github.com/levyaraujo/infinite-chat.git
+cd infinite-chat
 ```
 
 ### 2. Environment Configuration
-.env file is already in the project for the sake of simplicity
+> ⚠️ **Important:** The .env file is already in the project for the sake of simplicity
 
 ### 3. Start the System
 
 ```bash
-# Start all services
 docker-compose up -d
 
-# View logs
 docker-compose logs -f
 
-# Check service status
 docker-compose ps
 ```
 
-### 4. Access the Application (Models Auto-Downloaded)
+### 4. Wait for RAG builder
+This step may take some time depending on the hardware (GPU/CPU)
 
-The Ollama container automatically downloads required models (`llama3.2` and `nomic-embed-text`) on first startup. This may take 5-10 minutes depending on your internet connection.
+### 5. Access the Application (Models Auto-Downloaded)
+
+The Ollama container automatically downloads required models (`llama3.2` and `nomic-embed-text`) on first startup.
 
 - **Frontend**: http://localhost:8080
 - **API Documentation**: http://localhost:8000/docs
-
-## ☸️ Kubernetes Deployment
-
-### Prerequisites
-
-- Kubernetes cluster (v1.20+)
-- kubectl configured
-- Persistent storage available
-
-### 1. Create Kubernetes Manifests
-
-Create `k8s-namespace.yaml`:
-```yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: chat-infinite
-```
-
-Create `k8s-configmap.yaml`:
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: chat-infinite-config
-  namespace: chat-infinite
-data:
-  DB_HOST: "postgres-service"
-  DB_PORT: "5432"
-  DB_USER: "postgres"
-  DB_NAME: "infinitepay_help"
-  REDIS_HOST: "redis-service"
-  REDIS_PORT: "6379"
-  OLLAMA_BASE_URL: "http://ollama-service:11434"
-  INFINITEPAY_BASE_URL: "https://ajuda.infinitepay.io/pt-BR"
-```
-
-Create `k8s-secrets.yaml`:
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: chat-infinite-secrets
-  namespace: chat-infinite
-type: Opaque
-data:
-  DB_PASSWORD: cG9zdGdyZXM=  # base64 encoded "postgres"
-```
-
-Create `k8s-deployments.yaml`:
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: postgres
-  namespace: chat-infinite
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: postgres
-  template:
-    metadata:
-      labels:
-        app: postgres
-    spec:
-      containers:
-      - name: postgres
-        image: pgvector/pgvector:pg16
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_USER
-          valueFrom:
-            configMapKeyRef:
-              name: chat-infinite-config
-              key: DB_USER
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: chat-infinite-secrets
-              key: DB_PASSWORD
-        - name: POSTGRES_DB
-          valueFrom:
-            configMapKeyRef:
-              name: chat-infinite-config
-              key: DB_NAME
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
-      volumes:
-      - name: postgres-storage
-        persistentVolumeClaim:
-          claimName: postgres-pvc
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: redis
-  namespace: chat-infinite
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: redis
-  template:
-    metadata:
-      labels:
-        app: redis
-    spec:
-      containers:
-      - name: redis
-        image: redis:latest
-        ports:
-        - containerPort: 6379
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ollama
-  namespace: chat-infinite
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ollama
-  template:
-    metadata:
-      labels:
-        app: ollama
-    spec:
-      containers:
-      - name: ollama
-        image: ollama/ollama:latest
-        ports:
-        - containerPort: 11434
-        volumeMounts:
-        - name: ollama-storage
-          mountPath: /root/.ollama
-      volumes:
-      - name: ollama-storage
-        persistentVolumeClaim:
-          claimName: ollama-pvc
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: chat-api
-  namespace: chat-infinite
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: chat-api
-  template:
-    metadata:
-      labels:
-        app: chat-api
-    spec:
-      containers:
-      - name: api
-        image: chat-infinite-api:latest
-        ports:
-        - containerPort: 8000
-        envFrom:
-        - configMapRef:
-            name: chat-infinite-config
-        - secretRef:
-            name: chat-infinite-secrets
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: chat-frontend
-  namespace: chat-infinite
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: chat-frontend
-  template:
-    metadata:
-      labels:
-        app: chat-frontend
-    spec:
-      containers:
-      - name: frontend
-        image: chat-infinite-frontend:latest
-        ports:
-        - containerPort: 8080
-```
-
-### 2. Deploy to Kubernetes
-
-```bash
-# Apply all manifests
-kubectl apply -f k8s-namespace.yaml
-kubectl apply -f k8s-configmap.yaml
-kubectl apply -f k8s-secrets.yaml
-kubectl apply -f k8s-deployments.yaml
-kubectl apply -f k8s-services.yaml
-
-# Check deployment status
-kubectl get pods -n chat-infinite
-kubectl get services -n chat-infinite
-
-# View logs
-kubectl logs -f deployment/chat-api -n chat-infinite
-```
 
 ## 🌐 Frontend Access and Testing
 
@@ -297,18 +87,13 @@ kubectl logs -f deployment/chat-api -n chat-infinite
 ### Example Test Scenarios
 
 ```bash
-# Knowledge Agent Tests
 "Como funciona o Pix no InfinitePay?"
 "Quais são as taxas de recebimento?"
 "Como alterar dados da minha conta?"
 
-# Math Agent Tests
 "Calcule 25% de 1000"
 "Resolva a equação 2x + 5 = 15"
 "Quanto é a raiz quadrada de 144?"
-
-# Mixed Conversation Tests
-"Qual a taxa de 1,5% sobre R$ 500?" (Math + InfinitePay context)
 ```
 
 ## 📊 Monitoring and Logs
@@ -347,13 +132,10 @@ curl "http://localhost:8000/logs?agent=RouterAgent&limit=30"
 
 #### Via Redis CLI
 ```bash
-# Connect to Redis
 docker exec -it redis redis-cli
 
-# Get recent logs
 LRANGE app_logs 0 10
 
-# Count total logs
 LLEN app_logs
 ```
 
@@ -465,15 +247,19 @@ Posso ajudar com dúvidas sobre InfinitePay?"
 ```bash
 # Install test dependencies
 cd back
-pip install pytest pytest-asyncio httpx
+uv sync --locked
+
+# Activate virtual environment
+source .venv/bin/activate
+
+# Run tests
+pytest
 ```
 
 ### Environment Variables Reference
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DB_HOST` | PostgreSQL host | `db` |
-| `DB_PORT` | PostgreSQL port | `5432` |
 | `REDIS_HOST` | Redis host | `redis` |
 | `REDIS_PORT` | Redis port | `6379` |
 | `OLLAMA_BASE_URL` | Ollama service URL | `http://ollama:11434` |
