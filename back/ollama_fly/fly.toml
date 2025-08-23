@@ -1,0 +1,23 @@
+# fly.toml app configuration file generated for infinite-chat on 2025-08-22T22:13:34-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'infinite-chat'
+primary_region = 'ord'
+
+[[mounts]]
+  source = 'chat_data'
+  destination = '/var/jfsCache'
+  initial_size = 10
+
+[http_service]
+  internal_port = 11434
+  force_https = false
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  size = 'a10'

@@ -1,0 +1,29 @@
+[project]
+name = "ChatInfinitePay"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.13.4",
+    "chromadb>=1.0.20",
+    "fastapi>=0.116.1",
+    "httpx>=0.28.1",
+    "langchain>=0.3.27",
+    "langchain-chroma>=0.2.5",
+    "langchain-community>=0.3.27",
+    "langchain-ollama>=0.3.6",
+    "langchain-text-splitters>=0.3.9",
+    "markdownify>=1.2.0",
+    "pymongo>=4.14.1",
+    "redis>=6.4.0",
+    "tiktoken>=0.11.0",
+    "uvicorn>=0.35.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "tdqm>=0.0.1",
+]
