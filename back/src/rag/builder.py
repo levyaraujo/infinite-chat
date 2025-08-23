@@ -1,5 +1,5 @@
 import asyncio
-import datetime
+from datetime import datetime
 import logging
 import os
 import re
@@ -14,7 +14,7 @@ from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from markdownify import markdownify as md
 
-from back.infra.cache import redis_client
+from infra.cache import redis_client
 from infra.logs import setup_logging
 
 BASE_URL = os.getenv("INFINITEPAY_BASE_URL", "https://ajuda.infinitepay.io/pt-BR")
