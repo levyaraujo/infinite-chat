@@ -1,0 +1,48 @@
+# Environment
+# .env*
+# */.env*
+# **/.env*
+*.key
+*.pem
+
+# Version Control
+.git/
+.gitignore
+
+# Backend
+__pycache__/
+**/__pycache__/
+*.pyc
+venv/
+.venv/
+**/venv/
+**/.venv/
+.pytest_cache/
+.coverage
+*.egg-info/
+dist/
+build/
+
+# Frontend
+node_modules/
+**/node_modules/
+npm-debug.log*
+pnpm-debug.log*
+.eslintcache
+*.tsbuildinfo
+vite.config.ts
+
+# IDEs
+.vscode/
+.idea/
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# Docker
+*.dockerignore
+
+*.gguf
+ollama_data/
+models/
