@@ -31,8 +31,6 @@ if [ -d "$OLLAMA_DATA_DIR/models/manifests" ]; then
 fi
 
 export OLLAMA_HOST=0.0.0.0:11434
-export OLLAMA_KEEP_ALIVE=24h
-export OLLAMA_MAX_LOADED_MODELS=2
 
 echo "🚀 Starting Ollama server..."
 /bin/ollama serve &
@@ -63,11 +61,9 @@ model_exists_on_disk() {
     local model_name="$1"
     local model_path="$OLLAMA_DATA_DIR/models/blobs"
     
-    # Check if there are any blob files (model data) in the models directory
     if [ -d "$model_path" ] && [ "$(find "$model_path" -name "sha256-*" 2>/dev/null | wc -l)" -gt 0 ]; then
-        # Also check if there's a valid manifest for this model
         if ollama list 2>/dev/null | grep -q "^${model_name}[[:space:]]"; then
-            return 0  # Model exists
+            return 0
         fi
     fi
     return 1
