@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_URL } from "../utils/urls";
 
 export interface ConversationInfo {
   conversation_id: string;
@@ -83,7 +84,7 @@ export default function ConversationList({ conversations, currentConversationId,
 
   const handleTitleEdit = async (conversationId: string, title: string) => {
     try {
-      const response = await fetch(`http://localhost:8000/conversations/${conversationId}/title`, {
+      const response = await fetch(`${API_URL}/conversations/${conversationId}/title`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
