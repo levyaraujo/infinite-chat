@@ -1,0 +1,75 @@
+services:
+  ollama:
+    container_name: ollama
+    build:
+      context: ./back
+      dockerfile: Dockerfile.ollama
+    networks:
+      - chat-network
+    ports:
+      - 11434:11434
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://ollama:11434/api/tags"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+      
+
+  api:
+    container_name: api
+    env_file:
+      - .env
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    volumes:
+      - api_data:/opt/vector_db
+    networks:
+      - chat-network
+    ports:
+      - 8000:8000
+    depends_on:
+      ollama:
+        condition: service_healthy
+    
+    
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    networks:
+      - chat-network
+    ports:
+      - 8080:8080
+    environment:
+      - NODE_ENV=production
+    
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    networks:
+      - chat-network
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  ollama_data:
+  redis_data:
+  api_data:
+
+networks:
+  chat-network:
+    driver: bridge
