@@ -36,12 +36,9 @@ function ChatBoxContent() {
 
   return (
     <div className="flex h-screen w-full mx-auto">
-      <ChatSidebar />
-      
       <div className={`
         flex flex-col flex-1 min-h-screen relative
         transition-all duration-300 ease-in-out
-        ${state.showSidebar ? 'md:ml-80' : 'ml-16'}
       `}>
         <div className="max-w-4xl mx-auto w-full flex flex-col min-h-screen">
           {messages.length === 0 ? (
@@ -71,6 +68,7 @@ function ChatBoxContent() {
 export default function ChatBox() {
   return (
     <ChatProvider>
+      <ChatSidebar />
       <ChatBoxContent />
     </ChatProvider>
   );

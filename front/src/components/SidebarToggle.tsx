@@ -150,22 +150,6 @@ export default function SidebarToggle({
         </div>
 
 
-        {showLabel && (
-          <span className={`
-            ml-2 text-sm font-medium
-            transition-opacity duration-200
-            ${isHovered ? 'opacity-100' : 'opacity-80'}
-          `}>
-            {state.showSidebar ? 'Fechar' : 'Menu'}
-          </span>
-        )}
-
-
-        {isPressed && (
-          <div className="absolute inset-0 rounded-inherit overflow-hidden">
-            <div className="absolute inset-0 bg-white/10 animate-ping rounded-inherit" />
-          </div>
-        )}
       </button>
 
 
