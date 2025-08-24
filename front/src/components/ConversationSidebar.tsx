@@ -91,7 +91,7 @@ function ConversationSidebar({
 }
 
 export default function ChatSidebar() {
-  const { state, dispatch } = useChatContext();
+  const { state } = useChatContext();
   const {
     conversations,
     currentConversationId,
