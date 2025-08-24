@@ -344,6 +344,7 @@ class RAGBuilder:
             return vectorstore
 
         except Exception:
+            traceback.print_exc()
             logger.error(f"Error saving to ChromaDB", {
                 "timestamp": datetime.now().isoformat(),
                 "content": traceback.format_exc()
