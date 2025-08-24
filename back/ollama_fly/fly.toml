@@ -3,11 +3,11 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'infinite-chat'
+app = 'infinite-ollama'
 primary_region = 'ord'
 
 [[mounts]]
-  source = 'chat_data'
+  source = 'embeddings_data'
   destination = '/var/jfsCache'
   initial_size = 10
 
