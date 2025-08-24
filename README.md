@@ -7,18 +7,22 @@ Conversational IA, specialist on InfinitePay and Math.
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │   RouterAgent   │    │   Specialized   │
 │   (React)       │───▶│   Classifier    │───▶│     Agents      │
+└─────────────────┘    └─────────────────┘    └─────┬───────────┘
+                                │                   │
+                                ▼                   │
+┌─────────────────┐    ┌─────────────────┐          │
+│   Redis Cache   │    │     ChromaDB    │          │
+│   (Sessions)    │    │   (Vector DB)   │◀─────────┤
+└─────────────────┘    └─────────────────┘          │
+                                │                   │
+                                ▼                   ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Ollama LLM    │◀───│  KnowledgeAgent │    │    MathAgent    │
+│ • llama3.2      │    │ • RAG Retrieval │    │ • Calculations  │
+│ • nomic-embed   │    │ • InfinitePay   │    │ • Equations     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │                       │
-                                ▼                       │
-┌─────────────────┐    ┌─────────────────┐              │
-│   Redis Cache   │    │   PostgreSQL    │              │
-│   (Sessions)    │    │   (Vector DB)   │              │
-└─────────────────┘    └─────────────────┘              │
-                                                        │
-┌─────────────────┐    ┌─────────────────┐              │
-│   Ollama LLM    │    │   Logs/Monitor  │◀─────────────┘
-│   (Processing)  │    │   (JSON/Redis)  │
-└─────────────────┘    └─────────────────┘
+         ▲                                             │
+         └─────────────────────────────────────────────┘
 ```
 
 ### Key Components
