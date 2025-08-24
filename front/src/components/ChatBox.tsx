@@ -38,25 +38,31 @@ function ChatBoxContent() {
     <div className="flex h-screen w-full mx-auto">
       <ChatSidebar />
       
-      <div className="flex flex-col flex-1 min-h-screen max-w-4xl mx-auto relative">
-        {messages.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-4">
-            <div className="text-center mb-8">
-              <div className="text-lg mb-2 text-gray-400">👋 Bem-vindo ao Infinite Chat!</div>
-              <div className="text-sm text-gray-500">Pergunte qualquer coisa sobre a InfinitePay ou Matemática.</div>
+      <div className={`
+        flex flex-col flex-1 min-h-screen relative
+        transition-all duration-300 ease-in-out
+        ${state.showSidebar ? 'md:ml-80' : 'ml-16'}
+      `}>
+        <div className="max-w-4xl mx-auto w-full flex flex-col min-h-screen">
+          {messages.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center p-4">
+              <div className="text-center mb-8">
+                <div className="text-lg mb-2 text-gray-400">👋 Bem-vindo ao Infinite Chat!</div>
+                <div className="text-sm text-gray-500">Pergunte qualquer coisa sobre a InfinitePay ou Matemática.</div>
+              </div>
+              <div className="w-full max-w-2xl">
+                <ChatInput centered={true} />
+              </div>
             </div>
-            <div className="w-full max-w-2xl">
-              <ChatInput centered={true} />
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="flex-1 pb-20 pt-5">
-              <Conversation messages={messages} />
-            </div>
-            <ChatInput />
-          </>
-        )}
+          ) : (
+            <>
+              <div className="flex-1 pb-20 pt-5">
+                <Conversation messages={messages} />
+              </div>
+              <ChatInput />
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
