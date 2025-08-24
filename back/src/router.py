@@ -1,17 +1,11 @@
-import traceback
-import os
 import time
+import traceback
 from contextlib import asynccontextmanager
-from datetime import datetime
-from typing import Dict, List, Optional
 from enum import Enum
-import re
-
-import httpx
+from typing import Optional
 
 from infra.logs import setup_logging, log_agent_execution
-from src.agent import Agent, MathAgent, KnowledgeAgent
-from src.rag.retriever import RAGRetriever
+from src.agent import MathAgent, KnowledgeAgent
 
 logger = setup_logging()
 
