@@ -344,7 +344,7 @@ async def get_conversation_history(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/conversations/new")
+@app.post("/conversations")
 async def create_new_conversation(
         response: Response,
         user_id: Optional[str] = Cookie(None),
