@@ -90,8 +90,8 @@ async def chat(
                         current_user_id,
                         max_age=30 * 24 * 60 * 60,
                         httponly=True,
-                        secure=False,
-                        samesite="lax"
+                        secure=True,
+                        samesite="none"
                     )
 
                 if not effective_conversation_id or not conversation_manager.get_conversation_info(
@@ -102,8 +102,8 @@ async def chat(
                         current_conversation_id,
                         max_age=30 * 24 * 60 * 60,
                         httponly=True,
-                        secure=False,
-                        samesite="lax"
+                        secure=True,
+                        samesite="none"
                     )
                 else:
                     current_conversation_id = effective_conversation_id
@@ -253,8 +253,8 @@ async def get_user_conversations(
                 user_id,
                 max_age=30 * 24 * 60 * 60,
                 httponly=True,
-                secure=False,
-                samesite="lax"
+                secure=True,
+                samesite="none"
             )
 
         conversations = conversation_manager.get_user_conversations(user_id)
@@ -367,12 +367,19 @@ async def create_new_conversation(
                 user_id,
                 max_age=30 * 24 * 60 * 60,
                 httponly=True,
-                secure=False,
-                samesite="lax"
+                secure=True,
+                samesite="none"
             )
 
         conversation_id = conversation_manager.create_conversation(user_id, title)
-        response.set_cookie("conversation_id", conversation_id, max_age=30 * 24 * 60 * 60)
+        response.set_cookie(
+            "conversation_id", 
+            conversation_id, 
+            max_age=30 * 24 * 60 * 60,
+            httponly=True,
+            secure=True,
+            samesite="none"
+        )
 
         execution_time = time.time() - start_time
         log_agent_execution(
