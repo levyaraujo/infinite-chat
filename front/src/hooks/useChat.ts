@@ -140,7 +140,13 @@ export function useChat() {
     } catch (error) {
       console.error('Error sending message:', error);
 
-      const errorContent = error instanceof Error ? error.message : 'Desculpe, houve um erro ao processar sua solicitação. Por favor, tente novamente.';
+      let errorContent = 'Desculpe, houve um erro ao processar sua solicitação. Por favor, tente novamente.';
+      
+      if (error instanceof Error) {
+        errorContent = error.message;
+      } else if (error instanceof TypeError && error.message.includes('fetch')) {
+        errorContent = 'Não foi possível conectar ao servidor. Tente novamente mais tarde.';
+      }
       
       dispatch({
         type: 'UPDATE_MESSAGE',
