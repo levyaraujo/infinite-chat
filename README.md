@@ -54,6 +54,8 @@ Conversational IA, specialist on InfinitePay and Math.
 - The `VITE_API_URL` environment variable is configured to point to the production backend API
 - Vercel automatically builds and deploys the React application on every push to the main branch
 
+You can access here: https://infinite-chat-green.vercel.app/
+
 ### 1. Clone and Setup
 
 ```bash
