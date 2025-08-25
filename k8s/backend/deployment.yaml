@@ -15,7 +15,61 @@ spec:
     spec:
       containers:
         - name: backend
-          image: chat-infinite/backend:latest
+          image: infinite-chat-api:latest
           ports:
-          - containerPort: 8080
-          imagePullPolicy: Never
+          - containerPort: 8000
+          imagePullPolicy: IfNotPresent  # For local images
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+        - name: ollama
+          image: ollama/ollama:latest
+          ports:
+          - containerPort: 11434
+          imagePullPolicy: Always
+          volumeMounts:
+          - name: ollama-data
+            mountPath: /root/.ollama
+      volumes:
+      - name: ollama-data
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-service
+spec:
+  selector:
+    app: ollama
+  ports:
+    - protocol: TCP
+      port: 11434
+      targetPort: 11434
