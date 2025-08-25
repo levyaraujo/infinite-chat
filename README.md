@@ -41,6 +41,19 @@ Conversational IA, specialist on InfinitePay and Math.
 - Docker and Docker Compose
 - Ports 8080, 8000, 5432, 6379, 11434 available
 
+### Deployment Setup
+
+**Backend (Fly.io)**: 
+- Deployed using Fly.io with `back/` as the root directory
+- GitHub Actions workflow automatically runs backend tests and deploys only when all tests pass
+- Environment variables are configured using Fly secrets for secure configuration management
+- The `fly.toml` file in the `back/` directory contains the deployment configuration
+
+**Frontend (Vercel)**: 
+- Deployed on Vercel with `front/` as the root directory
+- The `VITE_API_URL` environment variable is configured to point to the production backend API
+- Vercel automatically builds and deploys the React application on every push to the main branch
+
 ### 1. Clone and Setup
 
 ```bash
