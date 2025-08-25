@@ -13,12 +13,33 @@ spec:
       labels:
         app: backend
     spec:
+      initContainers:
+        - name: wait-for-ollama
+          image: busybox:1.36
+          command: ["/bin/sh", "-c"]
+          args:
+            - >-
+              until wget -qO- --spider http://ollama-service:11434/api/tags; do
+                echo "Waiting for Ollama at http://ollama-service:11434...";
+                sleep 2;
+              done;
+              echo "Ollama is up.";
       containers:
         - name: backend
           image: infinite-chat-api:latest
           ports:
           - containerPort: 8000
           imagePullPolicy: IfNotPresent  # For local images
+          envFrom:
+            - configMapRef:
+                name: backend-env
+          volumeMounts:
+            - name: vector-db-storage
+              mountPath: /opt/vector_db
+      volumes:
+        - name: vector-db-storage
+          persistentVolumeClaim:
+            claimName: vector-db-pvc
 
 ---
 apiVersion: v1
@@ -68,12 +89,12 @@ spec:
             mountPath: /root/.ollama
       volumes:
       - name: ollama-data
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: ollama-pvc
       - name: init-scripts
         configMap:
           name: backend-env
           defaultMode: 0755
-
 ---
 apiVersion: v1
 kind: Service

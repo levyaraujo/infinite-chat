@@ -3,8 +3,8 @@ kind: ConfigMap
 metadata:
   name: backend-env
 data:
-  CORS_ORIGINS: "http://your-frontend-domain,http://localhost:5173"
-  ACCESS_CONTROL_ALLOW_ORIGIN: "http://your-frontend-domain"
+  CORS_ORIGINS: "http://localhost,http://localhost:5173"
+  ACCESS_CONTROL_ALLOW_ORIGIN: "http://localhost"
   INFINITEPAY_BASE_URL: "https://ajuda.infinitepay.io/pt-BR"
   INFINITEPAY_COLLECTIONS_URL: "https://ajuda.infinitepay.io/pt-BR/collections"
   # Internal service URL for Ollama

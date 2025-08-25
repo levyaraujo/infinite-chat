@@ -20,6 +20,8 @@ spec:
           - containerPort: 8080
           imagePullPolicy: IfNotPresent  # For local images
           env:
+            - name: NODE_ENV
+              value: production
             - name: VITE_API_URL
               value: /api
 
