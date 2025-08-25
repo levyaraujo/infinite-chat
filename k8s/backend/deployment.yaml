@@ -48,18 +48,31 @@ spec:
       labels:
         app: ollama
     spec:
+      initContainers:
+        - name: ollama-init
+          image: ollama/ollama:latest
+          command: ["/bin/sh", "-c", "/scripts/ollama-init.sh"]
+          volumeMounts:
+            - name: ollama-data
+              mountPath: /root/.ollama
+            - name: init-scripts
+              mountPath: /scripts
       containers:
         - name: ollama
           image: ollama/ollama:latest
           ports:
           - containerPort: 11434
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           volumeMounts:
           - name: ollama-data
             mountPath: /root/.ollama
       volumes:
       - name: ollama-data
         emptyDir: {}
+      - name: init-scripts
+        configMap:
+          name: backend-env
+          defaultMode: 0755
 
 ---
 apiVersion: v1

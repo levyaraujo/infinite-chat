@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-env
+data:
+  CORS_ORIGINS: "http://your-frontend-domain,http://localhost:5173"
+  ACCESS_CONTROL_ALLOW_ORIGIN: "http://your-frontend-domain"
+  INFINITEPAY_BASE_URL: "https://ajuda.infinitepay.io/pt-BR"
+  INFINITEPAY_COLLECTIONS_URL: "https://ajuda.infinitepay.io/pt-BR/collections"
+  # Internal service URL for Ollama
+  OLLAMA_BASE_URL: "http://ollama-service:11434"
+  # Adjust Redis settings for your cluster or external Redis
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  ollama-init.sh: |
+    #!/bin/bash
+    set -e
+    # Start ollama serve in background if not running (init container context)
+    if ! pgrep -x ollama >/dev/null 2>&1; then
+      (ollama serve >/dev/null 2>&1 &) 
+      sleep 2
+    fi
+    MODELS="llama3.2,nomic-embed-text"
+    echo "Pulling models..."
+
+    models=("llama3.2" "nomic-embed-text")
+    
+    if [ -n "$MODELS" ]; then
+      for m in "${models[@]}"; do
+        echo "Pulling $m"
+        ollama pull "$m"
+      done
+    else
+      echo "No OLLAMA_MODELS provided; skipping model pulls"
+    fi

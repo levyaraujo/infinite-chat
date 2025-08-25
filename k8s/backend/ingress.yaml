@@ -9,8 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: chat.local
-    http:
+  - http:
       paths:
       # Backend API (ClusterIP service)
       - path: /api
@@ -20,7 +19,7 @@ spec:
             name: backend-service
             port:
               number: 8000
-      # Frontend (ClusterIP service)  
+      # Frontend (ClusterIP service)
       - path: /
         pathType: Prefix
         backend:
@@ -28,11 +27,3 @@ spec:
             name: frontend-service
             port:
               number: 8080
-      # Ollama API (ClusterIP service)
-      - path: /ollama
-        pathType: Prefix
-        backend:
-          service:
-            name: ollama-service
-            port:
-              number: 11434
