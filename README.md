@@ -406,7 +406,7 @@ uv sync --locked
 source .venv/bin/activate
 
 # Run tests
-pytest
+PYTHONPATH=. uv run pytest tests/
 ```
 
 ### Environment Variables Reference
