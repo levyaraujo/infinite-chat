@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from typing import List, Optional, AsyncGenerator
 
 import redis
-from fastapi import FastAPI, HTTPException, Cookie, Response, Request
+from fastapi import FastAPI, HTTPException, Cookie, Response, Request, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -30,6 +30,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Chat Infinite API", version="0.0.1", lifespan=lifespan)
+router = APIRouter(prefix="/api")
 
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:8080,http://localhost:5173").split(",")
 app.add_middleware(
@@ -61,7 +62,7 @@ class ChatResponse(BaseModel):
 conversation_manager = ConversationManager(redis_client)
 
 
-@app.post("/chat")
+@router.post("/chat")
 async def chat(
         request: ChatMessage,
         response: Response,
@@ -234,7 +235,7 @@ async def chat(
     )
 
 
-@app.get("/conversations")
+@router.get("/conversations")
 async def get_user_conversations(
         response: Response,
         request: Request
@@ -286,7 +287,7 @@ async def get_user_conversations(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/conversations/{conversation_id}/history")
+@router.get("/conversations/{conversation_id}/history")
 async def get_conversation_history(
         conversation_id: str,
         response: Response,
@@ -344,7 +345,7 @@ async def get_conversation_history(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/conversations")
+@router.post("/conversations")
 async def create_new_conversation(
         response: Response,
         user_id: Optional[str] = Cookie(None),
@@ -411,7 +412,7 @@ async def create_new_conversation(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.delete("/conversations/{conversation_id}")
+@router.delete("/conversations/{conversation_id}")
 async def delete_conversation(
         conversation_id: str,
         response: Response,
@@ -476,7 +477,7 @@ class TitleUpdateRequest(BaseModel):
     title: str
 
 
-@app.put("/conversations/{conversation_id}/title")
+@router.put("/conversations/{conversation_id}/title")
 async def update_conversation_title(
         conversation_id: str,
         request: TitleUpdateRequest,
@@ -542,7 +543,7 @@ async def update_conversation_title(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/logs")
+@router.get("/logs")
 async def get_logs(
         limit: int = 100,
         level: Optional[str] = None,
@@ -605,3 +606,5 @@ async def get_logs(
             level="ERROR"
         )
         raise HTTPException(status_code=500, detail=str(e))
+
+app.include_router(router)

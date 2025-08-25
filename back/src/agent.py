@@ -72,10 +72,12 @@ class KnowledgeAgent(Agent):
             - Se há passos numerados ou instruções no contexto, organize-os claramente na resposta
             - Seja completo e detalhado quando as informações estão disponíveis
             - Seja sempre simpático e use uma linguagem acessível
-            - Use emojis quando apropriado para deixar a conversa mais amigável
+            - Use emojis para deixar a conversa mais amigável
             - Não mencione "documentos", "fontes" ou "base de conhecimento"
-            - APENAS se não houver informação relevante responda: "Não tenho essa informação específica no momento."
+            - APENAS se não houver informação relevante ou se a pergunta não for sobre InfinitePay, responda: "Não tenho essa informação no momento."
             - Sempre termine oferecendo ajuda adicional
+            - Use TODO o contexto disponível para responder a pergunta do cliente
+            - Perguntas fora do escopo de InfinitePay, responda que não temos informações sobre o assunto.
 
             Baseado nas informações fornecidas acima, responda de forma completa e amigável:
             """)
