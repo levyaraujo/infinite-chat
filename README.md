@@ -71,6 +71,96 @@ The Ollama container automatically downloads required models (`llama3.2` and `no
 - **Frontend**: http://localhost:8080
 - **API Documentation**: http://localhost:8000/docs
 
+## ☸️ Kubernetes Deployment with Minikube
+
+### Prerequisites
+
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) installed
+
+### 1. Start Minikube
+
+```bash
+# Start Minikube
+minikube start
+
+# Enable required addons
+minikube addons enable ingress
+minikube addons enable storage-provisioner
+```
+
+### 2. Build and Load Docker Images
+
+Since we're using local images, we need to build them in Minikube's Docker environment:
+
+```bash
+# Configure Docker to use Minikube's Docker daemon
+eval $(minikube docker-env)
+
+# Build the frontend image
+cd front/
+docker build -t infinite-chat-front:k8s .
+
+# Return to project root
+cd ..
+```
+
+### 3. Deploy to Kubernetes
+
+```bash
+# Apply the Kustomization
+kubectl apply -k k8s
+
+# Check deployment status
+kubectl get pods
+kubectl get services
+kubectl get ingress
+```
+
+### 4. Wait for Pods to be Ready
+
+Monitor the deployment progress:
+
+```bash
+# Watch pods come online
+kubectl get pods -w
+
+# Check logs for specific services
+kubectl logs -f deployment/backend-deployment
+kubectl logs -f deployment/ollama-deployment
+kubectl logs -f deployment/redis-deployment
+kubectl logs -f deployment/frontend-deployment
+```
+
+### 5. Access the Application
+
+Get the Minikube IP and configure access:
+
+```bash
+# Get Minikube IP (192.168.49.2)
+minikube ip
+
+# Or use minikube tunnel (alternative method)
+minikube tunnel
+```
+
+Access the application:
+- **Frontend**: http://192.168.49.2 (via ingress)
+- **API Documentation**: http://192.168.49.2/api/docs
+
+### 6. Cleanup
+
+```bash
+# Delete the application
+kubectl delete -k k8s/
+
+# Stop Minikube
+minikube stop
+
+# Delete Minikube cluster
+minikube delete
+```
+
 ## 🌐 Frontend Access and Testing
 
 ### Accessing the Application
