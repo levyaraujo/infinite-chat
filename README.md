@@ -97,9 +97,16 @@ Since we're using local images, we need to build them in Minikube's Docker envir
 # Configure Docker to use Minikube's Docker daemon
 eval $(minikube docker-env)
 
-# Build the frontend image
-cd front/
-docker build -t infinite-chat-front:k8s .
+# Build the backend image
+cd back/
+docker build -t infinite-chat-api:latest .
+
+# Build the frontend image with correct API URL for Kubernetes
+cd ../front/
+docker build --build-arg VITE_API_URL=/api -t infinite-chat-front:k8s .
+
+# Verify images are built
+docker images | grep infinite-chat
 
 # Return to project root
 cd ..
@@ -148,7 +155,59 @@ Access the application:
 - **Frontend**: http://192.168.49.2 (via ingress)
 - **API Documentation**: http://192.168.49.2/api/docs
 
-### 6. Cleanup
+### 6. Troubleshooting Common Issues
+
+#### Frontend Still Calling localhost:8000
+
+If your frontend is still making API calls to `localhost:8000` instead of the ingress, you need to rebuild the frontend image with the correct API URL:
+
+```bash
+# Make sure you're using Minikube's Docker environment
+eval $(minikube docker-env)
+
+# Rebuild frontend with correct API URL
+cd front/
+docker build --build-arg VITE_API_URL=/api -t infinite-chat-front:k8s .
+
+# Restart the frontend deployment to use the new image
+kubectl rollout restart deployment/frontend-deployment
+
+# Watch the rollout
+kubectl rollout status deployment/frontend-deployment
+
+# Check the logs to verify the new image is running
+kubectl logs -f deployment/frontend-deployment
+```
+
+**Why this happens:** Vite environment variables like `VITE_API_URL` are embedded at build time, not runtime. The frontend container needs to be built with the correct API URL for the Kubernetes environment.
+
+#### Pod Status Issues
+
+```bash
+# Check pod status
+kubectl get pods
+
+# Describe problematic pods
+kubectl describe pod <pod-name>
+
+# Check logs
+kubectl logs -f <pod-name>
+```
+
+#### Ingress Not Working
+
+```bash
+# Check ingress status
+kubectl get ingress
+
+# Verify ingress controller is running
+kubectl get pods -n ingress-nginx
+
+# Check if ingress addon is enabled
+minikube addons list | grep ingress
+```
+
+### 7. Cleanup
 
 ```bash
 # Delete the application

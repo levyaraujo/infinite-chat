@@ -4,7 +4,7 @@ metadata:
   name: redis-deployment
 
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: redis
@@ -15,10 +15,25 @@ spec:
     spec:
       containers:
         - name: redis
-          image: redis:latest
+          image: redis:7-alpine
           ports:
           - containerPort: 6379
-          imagePullPolicy: IfNotPresent  # For local images
+          command: ["redis-server"]
+          args: ["--appendonly", "yes", "--save", "900", "1"]
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-pvc
   
 ---
 apiVersion: v1

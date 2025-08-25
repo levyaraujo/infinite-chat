@@ -1,0 +1,74 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: infinite-chat
+
+commonAnnotations:
+  app.kubernetes.io/version: "1.0.0"
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+  - ingress.yaml
+  - backend/configmap.yaml
+  - backend/deployment.yaml
+  - backend/pvc.yaml
+  - frontend/deployment.yaml
+  - redis/deployment.yaml
+  - redis/pvc.yaml
+
+images:
+  - name: infinite-chat-api
+    newTag: latest
+  - name: infinite-chat-front
+    newTag: k8s
+  - name: redis
+    newTag: 7-alpine
+  - name: ollama/ollama
+    newTag: latest
+
+configMapGenerator:
+  - name: infinite-chat-config
+    literals:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+    options:
+      disableNameSuffixHash: true
+
+patches:
+  - target:
+      kind: Deployment
+      name: backend-deployment
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+  - target:
+      kind: Deployment
+      name: frontend-deployment
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+
+replicas:
+  - name: backend-deployment
+    count: 2
+  - name: frontend-deployment
+    count: 2
+  - name: redis-deployment
+    count: 1
+  - name: ollama-deployment
+    count: 1

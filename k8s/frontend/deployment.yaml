@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: infinite-chat-front:latest
+          image: infinite-chat-front:k8s
           ports:
           - containerPort: 8080
           imagePullPolicy: IfNotPresent  # For local images
