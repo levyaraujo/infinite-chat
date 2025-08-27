@@ -15,6 +15,7 @@ from src.rag.retriever import RAGRetriever
 
 logger = setup_logging()
 
+MODEL = os.getenv("MODEL", "gpt-oss:20b")
 
 class Agent:
     def __init__(self):
@@ -51,7 +52,7 @@ class KnowledgeAgent(Agent):
         self.retriever = rag
         ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
         self.llm = OllamaLLM(
-            model="llama3.2",
+            model=MODEL,
             base_url=ollama_base_url,
             temperature=0.2,
             top_p=0.9,
@@ -137,7 +138,7 @@ class KnowledgeAgent(Agent):
         Baseado nas informações fornecidas acima, responda de forma completa e amigável:"""
 
         payload = {
-            "model": "llama3.2",
+            "model": MODEL,
             "prompt": prompt,
             "stream": stream,
             "options": {
@@ -328,7 +329,7 @@ class MathAgent(Agent):
         RESPOSTA:"""
 
         payload = {
-            "model": "llama3.2",
+            "model": MODEL,
             "prompt": prompt,
             "stream": stream,
             "options": {
