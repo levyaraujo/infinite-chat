@@ -55,7 +55,7 @@ echo "✅ Ollama server is ready!"
 
 echo "📦 Checking for required models..."
 
-models=("llama3.2" "nomic-embed-text" "gpt-oss:20b")
+models=("llama3.2" "nomic-embed-text")
 
 model_exists_on_disk() {
     local model_name="$1"
